@@ -107,6 +107,29 @@ void delete_head(struct node **list){
 	*list=(*list)->next;
 }
 
+//inserts after the zth node in the list
+//or if list.size < z, it inserts at tail
+void insert_el_at(struct node **list, void *key, int z){
+	struct node *x = create_node(key);
+	insert_node_at(list, x, z);
+}
+
+void insert_node_at(struct node **list, struct node *x, int z){
+	if(z == 0){
+		insert_node(list, x);
+	}
+	struct node *temp = (struct node *)malloc(sizeof(struct node *));
+	temp = *list;
+	while(--z > 0 && !is_empty(temp->next)){
+		temp = temp->next;
+	}
+	
+	x->next = temp->next;
+	temp->next = x;
+} 
+		
+
+
 int is_empty(struct node *list){ return list == NULL; }
 
 int main(){ 
@@ -129,6 +152,9 @@ int main(){
 	insert_el(&head, (void *)&y);
 	insert_el(&head, (void *)&y);
 	
+	//struct node *test = create_node(&x);
+	//insert_node(&head, test);
+	
 	
 	//printf("%d\n", *((int *)(head->next->data)));
 	print_list(head);
@@ -136,6 +162,15 @@ int main(){
 	print_list(head);
 	delete_el(&head, (void *)&a);
 	print_list(head);
+	delete_head(&head);
+	print_list(head);
+	insert_el_at(&head, (void *)&y, 0);
+	print_list(head);
+	/*
+	while(!is_empty(head)){
+		printf("%d\n", *((int *)head->data));
+		head = head->next;
+	}*/
 	
 	/*
 	head->data = (void *) 9;
