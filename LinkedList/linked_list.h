@@ -19,4 +19,7 @@ int is_empty(struct node *);
 void delete_all(struct node **, void *);
 void delete_el(struct node **, void *);
 void delete_head(struct node **);
+void delete_at(struct node **, int);
+void clear_list(struct node **);
+int size(struct node **);
 #endif
