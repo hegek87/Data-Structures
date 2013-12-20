@@ -9,9 +9,9 @@ struct node *create_empty_node(){
 	return (struct node *)malloc(sizeof(struct node *));
 }
 struct node *create_node(void * data){
-	struct node *x = create_empty_node();
-	x->data = data;
-	return x;
+	struct node *temp = create_empty_node();
+	temp->data = data;
+	return temp;
 }
 
 void destroy_node(struct node *to_die){
@@ -19,11 +19,10 @@ void destroy_node(struct node *to_die){
 }
 
 struct node *search(struct node *list, void *key){
-	struct node *x = list;
-	while(x != NULL && x->data != key){
-		x = x->next;
+	while(!is_empty(list) && list->data != key){
+		list = list->next;
 	}
-	return x;
+	return list;
 }
 
 void insert_node(struct node **list, struct node *x){
@@ -61,10 +60,9 @@ void insert_node_at(struct node **list, struct node *x, int z){
 } 
 
 void print_list(struct node *list){
-	struct node *x = list;
-	while(x != NULL){
-		printf("%d ", *((int *)x->data));
-		x = x->next;
+	while(!is_empty(list)){
+		printf("%d ", *((int *)list->data));
+		list = list->next;
 	}
 	printf("\n");
 }
@@ -101,7 +99,7 @@ void delete_el(struct node **list, void *key){
 		*list = (*list)->next;
 		return;
 	}
-	struct node *prev;// = (struct node *)malloc(sizeof(struct node *));
+	struct node *prev;
 	struct node *cur = *list;
 	//find key
 	while(cur->data != key && !is_empty(cur)){
@@ -172,7 +170,7 @@ int is_empty(struct node *list){ return list == NULL; }
 int main(){ 
 	int *p = (int *)malloc(sizeof(int *));
 	*p = 10;
-	int x = 1, y=2, z=5, a=7;
+	int x = 1, y=2, z=5, a=7, m = 100;
 	struct node *head = create_node((void *)p);
 	insert_el(&head, (void *)&x);
 	insert_el(&head, (void *)&y);
@@ -188,6 +186,11 @@ int main(){
 	insert_el(&head, (void *)&y);
 	insert_el(&head, (void *)&y);
 	insert_el(&head, (void *)&y);
+	
+	struct node *temp = search(head, (void *)&z);
+	printf("is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
+	temp = search(head, (void *)&m);
+	printf("Is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
 	
 	print_list(head);
 	delete_all(&head, (void *)&y);

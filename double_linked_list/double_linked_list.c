@@ -98,10 +98,83 @@ void insert_node_at(struct dl_list **list, struct node *dat, int z){
 	++(*list)->size;
 }	
 
-void delete_all(struct dl_list **, void *);
-void delete_el(struct dl_list **, void *);
-void delete_head(struct dl_list **);
-void delete_tail(struct dl_list **);
+/*
+void delete_all(struct dl_list **list, void *key){
+	if(is_empty(*list)){
+		return;
+	}
+	struct node *cur = (*list)->head;
+	while(cur->next != NULL){
+		//first element is a key
+		if((*list)->head->data == key){
+			struct node *to_die = (*list)->head;
+			(*list)->head = (*list)->head->next;
+			to_die->next = NULL;
+			(*list)->head->prev = NULL;
+			destroy_node(to_die);
+			--(*list)->size;
+		}
+		//match found, delete
+		else if(cur->data == key){
+			struct node *to_die = cur;
+			cur->prev = cur->next;
+			cur->next = cur->prev;
+			cur = cur->next;
+			destroy_node(to_die);
+			--(*list)->size;
+		}
+		//no match found
+		else{
+			cur=cur->next;
+		}
+	}
+}
+*/
+
+void delete_el(struct dl_list **list, void *key);
+void delete_head(struct dl_list **list){
+	//empty list
+	if(is_empty(*list)){
+		return;
+	}
+	//singleton list
+	if((*list)->size == 1){
+		struct node *to_die = (*list)->head;
+		(*list)->head = (*list)->tail = NULL;
+		destroy_node(to_die);
+		--(*list)->size;
+		return;
+	}
+	//(*list)->size > 1
+	struct node *to_die = (*list)->head;
+	(*list)->head = (*list)->head->next;
+	(*list)->head->prev = NULL;
+	--(*list)->size;
+	destroy_node(to_die);
+}
+
+void delete_tail(struct dl_list **list){
+	//empty list
+	if(is_empty(*list)){
+		return;
+	}
+	//singleton list
+	//possibly use clear_list instead
+	if((*list)->size == 1){
+		struct node *to_die = (*list)->head;
+		(*list)->head = (*list)->tail = NULL;
+		destroy_node(to_die);
+		--(*list)->size;
+		return;
+	}
+	//(*list)->size > 1
+	struct node *to_die = (*list)->tail;
+	(*list)->tail = (*list)->tail->prev;
+	(*list)->tail->next = NULL;
+	--(*list)->size;
+	destroy_node(to_die);
+}
+
 void delete_at(struct node **, int);
 
 void print_list(struct dl_list *list){
@@ -151,15 +224,20 @@ int main(){
 	printf("is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
 	temp = search(head, (void *)&m);
 	printf("Is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
+	print_list(head);
+	delete_head(&head);
+	print_list(head);
+	delete_tail(&head);
+	print_list(head);
 	
 	/*
 	print_list(head);
 	delete_all(&head, (void *)&y);
 	print_list(head);
+	*/
+	/*
 	delete_el(&head, (void *)&x);
-	print_list(head);
-	delete_head(&head);
-	print_list(head);
+	
 	insert_el_at(&head, (void *)&y, 4);
 	print_list(head);
 	delete_at(&head, 10000);
