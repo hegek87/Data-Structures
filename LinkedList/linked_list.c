@@ -152,12 +152,12 @@ void delete_at(struct node **list, int i){
 	prev->next = cur->next;
 }
 
-int size(struct node **list){
-	if(is_empty(*list)){
+int size(struct node *list){
+	if(is_empty(list)){
 		return 0;
 	}
 	int i = 1;
-	struct node *cur = *list;
+	struct node *cur = list;
 	while(!is_empty(cur->next)){
 		++i;
 		cur = cur->next;
@@ -200,12 +200,12 @@ int main(){
 	print_list(head);
 	delete_at(&head, 10000);
 	print_list(head);
-	printf("Size: %d\n", size(&head));
+	printf("Size: %d\n", size(head));
 	clear_list(&head);
 	print_list(head);
-	printf("Size: %d\n", size(&head));
+	printf("Size: %d\n", size(head));
 	insert_el(&head, (void *)&x);
 	print_list(head);
-	printf("Size: %d\n", size(&head));
+	printf("Size: %d\n", size(head));
 	return 0;
 }

@@ -6,22 +6,44 @@
 #include "double_linked_list.h"
 
 
-struct node *create_empty_node();
-struct node *create_node(void *);
-void destroy_node(struct node *);
-struct node *search(struct node *, void *);
-void insert_el(struct node **, void *);
-void insert_node(struct node **, struct node *);
-void insert_el_at(struct node **, void *);
-void insert_node_at(struct node **, struct node *);
-void delete_all(struct node **, void *);
-void delete_el(struct node **, void *);
-void delete_head(struct node **);
+struct node *create_empty_node(){
+	return (struct node *) malloc(sizeof(struct node *));
+}
+
+struct node *create_node(void *key){
+	struct node *temp = create_empty_node();
+	temp->data = key;
+	temp->next = temp->prev = NULL;
+	return temp;
+}
+
+void destroy_node(struct node *to_die){
+	free(to_die);
+}
+
+struct dl_list *create_empty_list(){
+	return (struct dl_list *)malloc(sizeof(struct dl_list *));
+}
+
+struct node *search(struct dl_list *, void *);
+
+void insert_el_head(struct dl_list **, void *);
+void insert_el_tail(struct dl_list **, void *);
+void insert_node_head(struct dl_list **, struct node *);
+void insert_node_tail(struct dl_list **, struct node *);
+void insert_el_at(struct dl_list **, void *);
+void insert_node_at(struct dl_list **, struct node *);
+
+void delete_all(struct dl_list **, void *);
+void delete_el(struct dl_list **, void *);
+void delete_head(struct dl_list **);
+void delete_tail(struct dl_list **);
 void delete_at(struct node **, int);
-void print_list(struct node *);
-int is_empty(struct node *);
-void clear_list(struct node **);
-int size(struct node **);
+
+void print_list(struct dl_list *);
+int is_empty(struct dl_list *);
+void clear_list(struct dl_list **);
+int size(struct dl_list *);
 
 int main(){
 	/*
