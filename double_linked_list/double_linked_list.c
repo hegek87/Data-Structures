@@ -22,17 +22,81 @@ void destroy_node(struct node *to_die){
 }
 
 struct dl_list *create_empty_list(){
-	return (struct dl_list *)malloc(sizeof(struct dl_list *));
+	struct dl_list *temp = (struct dl_list *)malloc(sizeof(struct dl_list *));
+	temp->head = temp->tail = NULL;
+	temp->size = 0;
+	return temp;
 }
 
-struct node *search(struct dl_list *, void *);
+struct node *search(struct dl_list *list, void *key){
+	struct node *cur = list->head;
+	while(cur != NULL && cur->data != key){
+		cur = cur->next;
+	}
+	return cur;
+}
 
-void insert_el_head(struct dl_list **, void *);
-void insert_el_tail(struct dl_list **, void *);
-void insert_node_head(struct dl_list **, struct node *);
-void insert_node_tail(struct dl_list **, struct node *);
-void insert_el_at(struct dl_list **, void *);
-void insert_node_at(struct dl_list **, struct node *);
+void insert_el_head(struct dl_list **list, void *key){
+	struct node *temp = create_node(key);
+	insert_node_head(list, temp);
+}
+
+void insert_el_tail(struct dl_list **list, void *key){
+	struct node *temp = create_node(key);
+	insert_node_tail(list, temp);
+}
+	
+void insert_node_head(struct dl_list **list, struct node *temp){
+	//is the list empty?
+	if(is_empty(*list)){
+		(*list)->head = (*list)->tail = temp;
+		++(*list)->size;
+		return;
+	}
+	temp->next = (*list)->head;
+	((*list)->head)->prev = temp;
+	(*list)->head = temp;
+	++(*list)->size;
+}
+void insert_node_tail(struct dl_list **list, struct node *temp){
+	//is the list empty?
+	if(is_empty(*list)){
+		(*list)->head = (*list)->tail = temp;
+		++(*list)->size;
+		return;
+	}
+	(*list)->tail->next = temp;
+	temp->prev = (*list)->tail;
+	(*list)->tail = temp;
+	++(*list)->size;
+}
+//if z>list->size, insert at tail;
+void insert_el_at(struct dl_list **list, void *key, int z){
+	struct node *temp = create_node(key);
+	insert_node_at(list, temp, z);
+}
+		
+//insert in the z+1 position
+void insert_node_at(struct dl_list **list, struct node *dat, int z){
+	if(is_empty(*list) || z == 0){
+		insert_node_head(list, dat);
+		return;
+	}
+	if(z >= (*list)->size){
+		insert_node_tail(list, dat);
+		return;
+	}
+	//0<z<list->size
+	struct node *cur = (*list)->head;
+	while(z-- > 0){
+		cur = cur->next;
+	}
+	dat->next = cur->next;
+	cur->next = dat;
+	dat->next->prev = dat;
+	dat->prev = cur;
+	++(*list)->size;
+}	
 
 void delete_all(struct dl_list **, void *);
 void delete_el(struct dl_list **, void *);
@@ -40,32 +104,55 @@ void delete_head(struct dl_list **);
 void delete_tail(struct dl_list **);
 void delete_at(struct node **, int);
 
-void print_list(struct dl_list *);
-int is_empty(struct dl_list *);
-void clear_list(struct dl_list **);
-int size(struct dl_list *);
+void print_list(struct dl_list *list){
+	int i = 0;
+	struct node *cur = list->head;
+	while(i++ < list->size){
+		printf("%d ", *((int *)cur->data));
+		cur = cur->next;
+	}
+	printf("\n");
+}
+
+int is_empty(struct dl_list *list){ return list == NULL || list->size == 0; }
+void clear_list(struct dl_list **list){
+	(*list)->size = 0;
+	(*list)->head = (*list)->tail = NULL;
+}
+int size(struct dl_list *list){
+	return list->size;
+}
 
 int main(){
-	/*
 	int *p = (int *)malloc(sizeof(int *));
 	*p = 10;
-	int x = 1, y=2, z=5, a=7;
-	struct node *head = create_node((void *)p);
-	insert_el(&head, (void *)&x);
-	insert_el(&head, (void *)&y);
-	insert_el(&head, (void *)&z);
-	insert_el(&head, (void *)&a);
-	insert_el(&head, (void *)&z);
-	insert_el(&head, (void *)&a);
-	insert_el(&head, (void *)&z);
-	insert_el(&head, (void *)&a);
-	insert_el(&head, (void *)&z);
-	insert_el(&head, (void *)&a);
-	insert_el(&head, (void *)&y);
-	insert_el(&head, (void *)&y);
-	insert_el(&head, (void *)&y);
-	insert_el(&head, (void *)&y);
+	int x = 1, y=2, z=5, a=7, m = 100;
+	struct dl_list *head = create_empty_list();
+	insert_el_head(&head, (void *)&x);
+	insert_el_head(&head, (void *)&y);
+	insert_el_head(&head, (void *)&z);
+	insert_el_head(&head, (void *)&a);
+	insert_el_head(&head, (void *)&z);
+	insert_el_head(&head, (void *)&a);
+	print_list(head);
+	insert_el_tail(&head, (void *)&z);
+	insert_el_tail(&head, (void *)&a);
+	insert_el_tail(&head, (void *)&z);
+	insert_el_tail(&head, (void *)&a);
+	insert_el_tail(&head, (void *)&y);
+	insert_el_tail(&head, (void *)&y);
+	insert_el_tail(&head, (void *)&y);
+	insert_el_tail(&head, (void *)&y);
+	print_list(head);
+	insert_el_at(&head, (void *)&z, 0);
+	print_list(head);
 	
+	struct node *temp = search(head, (void *)&z);
+	printf("is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
+	temp = search(head, (void *)&m);
+	printf("Is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
+	
+	/*
 	print_list(head);
 	delete_all(&head, (void *)&y);
 	print_list(head);
@@ -77,13 +164,13 @@ int main(){
 	print_list(head);
 	delete_at(&head, 10000);
 	print_list(head);
-	printf("Size: %d\n", size(&head));
+	printf("Size: %d\n", size(head));
 	clear_list(&head);
 	print_list(head);
-	printf("Size: %d\n", size(&head));
+	printf("Size: %d\n", size(head));
 	insert_el(&head, (void *)&x);
 	print_list(head);
-	printf("Size: %d\n", size(&head));
+	printf("Size: %d\n", size(head));
 	*/
 	return 0;
 }
