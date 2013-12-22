@@ -2,7 +2,8 @@
 # Script to compile and execute a c program in one step.
 
 # Compile the program with -o option to specify the name of the binary
-gcc -g -Wall linked_list.c -o ./objects/linked_list 
+#gcc -g -Wall linked_list.c -o ./objects/linked_list 
+make
 
 # If there were no compilation errors, run the program
 if [[ $? -eq 0 ]]; then
