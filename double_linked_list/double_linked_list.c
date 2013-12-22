@@ -7,17 +7,23 @@
 
 
 struct node *create_empty_node(){
-	return (struct node *) malloc(sizeof(struct node));
+	struct node *temp = (struct node *) malloc(sizeof(struct node));
+	temp->next = temp->prev = NULL;
+	temp->data = NULL;
+	return temp;
 }
 
 struct node *create_node(void *key){
+	void *copy = malloc(sizeof(void *));
+	memcpy(copy, key, sizeof(key));
 	struct node *temp = create_empty_node();
-	temp->data = key;
+	temp->data = copy;
 	temp->next = temp->prev = NULL;
 	return temp;
 }
 
 void destroy_node(struct node *to_die){
+	free(to_die->data);
 	free(to_die);
 }
 
@@ -39,7 +45,6 @@ struct node *search(struct dl_list *list, void *key){
 void insert_el_head(struct dl_list **list, void *key){
 	struct node *temp = create_node(key);
 	insert_node_head(list, temp);
-	destroy_node(temp);
 }
 
 void insert_el_tail(struct dl_list **list, void *key){
@@ -230,21 +235,23 @@ int size(struct dl_list *list){
 	return list->size;
 }
 
+void free_list(struct dl_list *list){
+	struct node *cur;
+	struct node *temp;
+	for(cur = list->head; cur != NULL; cur = temp){
+		temp = cur->next;
+		destroy_node(cur);
+	}
+	free(list);
+}
+
 int main(){
 	int *p = (int *)malloc(sizeof(int *));
-	*p = 10;
+	//printf("%d %d\n", sizeof(int), sizeof(int *));
 	int x = 1, y=2, z=5, a=7, m = 100;
+	*p = x;
 	struct dl_list *head = create_empty_list();
-	print_list(head);
-	insert_el_head(&head, (void *)&x);
-	free(p);
-	free(head);
-	/*
-	print_list(head);
-	delete_el(&head, (void *)&x);
-	print_list(head);
-	*/
-	/*
+	insert_el_head(&head, (void *)p);
 	insert_el_head(&head, (void *)&x);
 	insert_el_head(&head, (void *)&y);
 	insert_el_head(&head, (void *)&z);
@@ -260,6 +267,16 @@ int main(){
 	insert_el_tail(&head, (void *)&y);
 	insert_el_tail(&head, (void *)&y);
 	insert_el_tail(&head, (void *)&y);
+	print_list(head);
+	free(p);
+	print_list(head);
+	free_list(head);
+	/*
+	print_list(head);
+	delete_el(&head, (void *)&x);
+	print_list(head);
+	*/
+	/*
 	print_list(head);
 	insert_el_at(&head, (void *)&z, 0);
 	print_list(head);

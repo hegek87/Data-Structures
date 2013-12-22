@@ -36,5 +36,6 @@ void delete_at(struct node **, int);
 void print_list(struct dl_list *);
 int is_empty(struct dl_list *);
 void clear_list(struct dl_list **);
+void free_list(struct dl_list *);
 int size(struct dl_list *);
 #endif
