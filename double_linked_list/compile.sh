@@ -9,3 +9,9 @@ make
 if [[ $? -eq 0 ]]; then
         ./objects/dll
 fi
+
+if [[ $? -eq 139 ]]; then
+	if [ "$1" = "y" ]; then
+		gdb ./objects/dll
+	fi
+fi

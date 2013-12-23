@@ -27,15 +27,19 @@ void insert_node_tail(struct dl_list **, struct node *);
 void insert_el_at(struct dl_list **, void *, int);
 void insert_node_at(struct dl_list **, struct node *, int);
 
-void delete_all(struct dl_list **, void *);
+void delete_all(struct dl_list **, void *, int(*com)(void*,void*));
 void delete_el(struct dl_list **, void *, int (*comp)(void *, void *));
 void delete_head(struct dl_list **);
 void delete_tail(struct dl_list **);
-void delete_at(struct node **, int);
+void delete_at(struct dl_list **, int);
+void delete_node(struct dl_list **, struct node *);
+
+//uses delete_el, assuming comp == numcmp
+void delete_int(struct dl_list **, int);
 
 void print_list(struct dl_list *);
 int is_empty(struct dl_list *);
-void clear_list(struct dl_list **);
+void clear_list(struct dl_list *);
 void free_list(struct dl_list *);
 int size(struct dl_list *);
 
