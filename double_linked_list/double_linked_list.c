@@ -118,19 +118,12 @@ void delete_all(struct dl_list **list, void *key, int (*comp)(void*,void*)){
 		//if first element is key, remove it
 		if((*comp)((*list)->head->data, key)){
 			cur = cur->next;
-			delete_head(list);
-			/*
-			temp = cur;
-			(*list)->head = (*list)->head->next;
-			cur = cur->next;
-			destroy_node(temp);
-			--(*list)->size;
-			*/
+			destroy_node(delete_head(list));
 		}
 		//if tail is key, remove it
 		if((*comp)((*list)->tail->data, key)){
 			cur = cur->next;
-			delete_tail(list);
+			destroy_node(delete_tail(list));
 		}
 		//key found in cur->data
 		else if((*comp)(cur->data, key)){
@@ -148,101 +141,99 @@ void delete_all(struct dl_list **list, void *key, int (*comp)(void*,void*)){
 	}
 }
 
-void delete_el(struct dl_list **list, void *key, int (*comp)(void*,void*)){
+struct node *delete_el(struct dl_list **list, void *key, int (*comp)(void*,void*)){
 	if(is_empty(*list)){
-		return;
+		return NULL;
 	}
 	struct node *cur;
 	//key not found
-	if(!(cur=search(*list, key, comp))){ return; }
+	if(!(cur=search(*list, key, comp))){ return NULL; }
 	//delete found key
-	delete_node(list, cur);
+	return delete_node(list, cur);
 }
 
-void delete_head(struct dl_list **list){
+struct node *delete_head(struct dl_list **list){
 	//empty list
 	if(is_empty(*list)){
-		return;
+		return NULL;
 	}
 	//singleton list
 	if((*list)->size == 1){
 		struct node *to_die = (*list)->head;
 		(*list)->head = (*list)->tail = NULL;
-		destroy_node(to_die);
 		--(*list)->size;
-		destroy_node(to_die);
-		return;
+		return to_die;
 	}
 	//(*list)->size > 1
 	struct node *to_die = (*list)->head;
 	(*list)->head = (*list)->head->next;
 	(*list)->head->prev = NULL;
 	--(*list)->size;
-	destroy_node(to_die);
+	return to_die;
 }
 
-void delete_tail(struct dl_list **list){
+struct node *delete_tail(struct dl_list **list){
 	//empty list
 	if(is_empty(*list)){
-		return;
+		return NULL;
 	}
 	//singleton list
 	if((*list)->size == 1){
 		struct node *to_die = (*list)->head;
 		(*list)->head = (*list)->tail = NULL;
-		destroy_node(to_die);
 		--(*list)->size;
-		return;
+		return to_die;
 	}
 	//(*list)->size > 1
 	struct node *to_die = (*list)->tail;
 	(*list)->tail = (*list)->tail->prev;
 	(*list)->tail->next = NULL;
 	--(*list)->size;
-	destroy_node(to_die);
+	return to_die;
 }
 
 //delete tail if input is larger than list size
 //delete the element immediately after the zth node
-void delete_at(struct dl_list **list, int z){
+struct node *delete_at(struct dl_list **list, int z){
 	if(is_empty(*list)){
 		//nothing to delete
-		return;
+		return NULL;
 	}
 	else if(z == 0){
-		delete_head(list);
+		return delete_head(list);
 	}
 	else if(z >= (*list)->size){
-		delete_tail(list);
+		return delete_tail(list);
 	}
 	else{
 		struct node *temp = (*list)->head;
 		while(z-- > 0){
 			temp = temp->next;
 		}
-		delete_node(list, temp);
+		return delete_node(list, temp);
 	}
 }
 
-void delete_node(struct dl_list **list, struct node *to_die){
+struct node *delete_node(struct dl_list **list, struct node *to_die){
 	if(!to_die->next){
 		//data == (*list)->tail
-		delete_tail(list);
+		return delete_tail(list);
 	}
 	else if(!to_die->prev){
 		//data == (*list)->head		
-		delete_head(list);
+		return delete_head(list);
 	}
 	else{
 		to_die->prev->next = to_die->next;
 		to_die->next->prev = to_die->prev;
 		--(*list)->size;
-		destroy_node(to_die);
+		to_die->next = to_die->prev = NULL;
+		return to_die;
 	}
 }
 
-void delete_int(struct dl_list **list, int z){
-	delete_el(list, (void *)&z, (int(*)(void*,void*))numcmp);
+struct node *delete_int(struct dl_list **list, int z){
+	return delete_el(list, (void *)&z, (int(*)(void*,void*))numcmp);
 }
 	
 
@@ -307,7 +298,7 @@ int main(){
 	insert_el_tail(&head, (void *)&y);
 	
 	print_list(head);
-	delete_int(&head, x);
+	destroy_node(delete_int(&head, x));
 	print_list(head);
 	delete_all(&head, (void *)&a, (int(*)(void*,void*))numcmp);
 	print_list(head);
@@ -323,15 +314,15 @@ int main(){
 		
 	print_list(head);
 	printf("Deleting head\n");
-	delete_head(&head);
+	destroy_node(delete_head(&head));
 	print_list(head);
 	printf("Deleting tail\n");
-	delete_tail(&head);
+	destroy_node(delete_tail(&head));
 	print_list(head);
 	
 	
 	printf("Deleting: %d\n", *((int *)&x));
-	delete_el(&head, (void *)&x, (int(*)(void*,void*))numcmp);
+	printf("Null? %d\n", delete_el(&head, (void *)&x, (int(*)(void*,void*))numcmp)==NULL);
 	print_list(head);
 	printf("Freeing p\n");
 	free(p);
@@ -340,7 +331,7 @@ int main(){
 	printf("Inserting %d at position %d\n", *((int *)&y), 5);
 	insert_el_at(&head, (void *)&y, 4);
 	print_list(head);
-	delete_at(&head, 10000);
+	destroy_node(delete_at(&head, 10000));
 	
 	print_list(head);
 	printf("Size: %d\n", size(head));
