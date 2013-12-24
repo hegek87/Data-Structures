@@ -1,7 +1,0 @@
-#!/bin/bash
-
-make 
-
-if [[ $? -eq 0 ]]; then
-valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./objects/dll
-fi
