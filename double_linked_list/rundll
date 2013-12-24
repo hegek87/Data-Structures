@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./objects/dll
+
+if [[ $? -eq 139 ]]; then
+	gdb ./objects/dll
+fi

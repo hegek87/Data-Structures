@@ -274,6 +274,7 @@ int numcmp(int *x, int *y){
 	return *x == *y;
 }
 
+/*
 int main(){
 	int *p = (int *)malloc(sizeof(int *));
 	int x = 1, y=2, z=5, a=7, m = 100;
@@ -340,3 +341,4 @@ int main(){
 	
 	return 0;
 }
+*/

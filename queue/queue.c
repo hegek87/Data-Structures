@@ -6,5 +6,6 @@
 #include "../double_linked_list/double_linked_list.h"
 
 int main(){
+	printf("HI\n");
 	return 0;
 }
