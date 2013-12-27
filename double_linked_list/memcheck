@@ -1,6 +1,8 @@
 #!/bin/bash
 
-make 
+if [[ "$1" = "r" ]]; then
+	make 
+fi
 
 if [[ $? -eq 0 ]]; then
 valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes ./objects/dll
