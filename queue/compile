@@ -1,0 +1,17 @@
+#!/bin/bash
+ 
+make
+
+if [[ $? -eq 0 ]]; then
+        ./objects/queue
+fi
+
+if [[ $? -eq 139 ]]; then
+	if [ "$1" = "y" ]; then
+		gdb ./objects/queue
+	fi
+fi
+
+if [[ "$1" = "d" ]]; then
+	gdb ./objects/queue
+fi

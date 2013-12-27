@@ -1,0 +1,13 @@
+#!/bin/bash
+ 
+make
+
+if [[ $? -eq 0 ]]; then
+        ./objects/stack
+fi
+
+if [[ $? -eq 139 ]]; then
+	if [ "$1" = "y" ]; then
+		gdb ./objects/stack
+	fi
+fi

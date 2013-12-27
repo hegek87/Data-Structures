@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ "$1" = "r" ]]; then
+	make 
+fi
+
+./objects/dll
+
+if [[ $? -eq 139 ]]; then
+	gdb ./objects/dll
+fi
