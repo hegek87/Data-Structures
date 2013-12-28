@@ -91,7 +91,6 @@ struct node *min(struct node *root){
 	return root->left;
 }
 
-//TEST
 struct node *successor(struct node *root);
 struct node *predecessor(struct node *root);
 
