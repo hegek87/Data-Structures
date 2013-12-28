@@ -194,6 +194,10 @@ void clear_list(struct slist *list){
 		temp = cur->next;
 		destroy_node(cur);
 	}
+}
+
+void free_list(struct slist *list){
+	clear_list(list);
 	free(list);
 }
 
@@ -229,28 +233,24 @@ int main(){
 	temp = search(head, (void *)&m, (comp)numcmp);
 	printf("Is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
 	
+	free(p);
 	print_list(head);
 	delete_all(head, (void *)&y, (comp)numcmp);
 	print_list(head);
-	delete_el(head, (void *)&x, (comp)numcmp);
+	destroy_node(delete_el(head, (void *)&x, (comp)numcmp));
 	print_list(head);
-	delete_head(head);
+	destroy_node(delete_head(head));
 	print_list(head);
 	insert_el_at(head, (void *)&y, 4);
 	print_list(head);
-	delete_at(head, 4);
+	destroy_node(delete_at(head, 4));
 	print_list(head);
 	printf("Size: %d\n", size(head));
-	delete_tail(head);
+	destroy_node(delete_tail(head));
 	print_list(head);
-	delete_el(head, (void *)&z, (comp)numcmp);
+	destroy_node(delete_el(head, (void *)&z, (comp)numcmp));
 	print_list(head);
-	clear_list(head);
-	print_list(head);
-	printf("Size: %d\n", size(head));
-	insert_el_head(head, (void *)&x);
-	print_list(head);
-	printf("Size: %d\n", size(head));
+	free_list(head);
 	
 	
 	return 0;

@@ -30,6 +30,7 @@ struct node *delete_head(struct slist *);
 struct node *delete_tail(struct slist *);
 struct node *delete_at(struct slist *, int);
 void clear_list(struct slist *);
+void free_list(struct slist *);
 int size(const struct slist *);
 
 int numcmp(const int *, const int *);

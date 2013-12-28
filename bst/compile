@@ -1,15 +1,15 @@
 #!/bin/bash
+
 if [[ "$1" = "r" ]]; then
 	make
 fi
 
-# If there were no compilation errors, run the program
 if [[ $? -eq 0 ]]; then
-        ./objects/linked_list
+	./objects/bst
 fi
 
 if [[ $? -eq 139 ]]; then
 	if [[ "$1" = "y" ]]; then
-		gdb ./objects/linked_list
+		gdb ./objects/bst
 	fi
 fi
