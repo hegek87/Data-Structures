@@ -91,10 +91,10 @@ struct node *min(struct node *root){
 	return root->left;
 }
 
-/*
-struct node *successor(const struct *node);
-struct node *predecessor(const struct *node);
-*/
+
+struct node *successor(struct node *root);
+struct node *predecessor(struct node *root);
+
 
 void insert_node(struct node *root, struct node *key){
 	struct node *x = root;

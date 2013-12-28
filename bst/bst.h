@@ -24,8 +24,8 @@ struct node *iter_search(struct node *, const int);
 struct node *max(struct node *);
 struct node *min(struct node *);
 
-struct node *successor(const struct node *);
-struct node *predecessor(const struct node *);
+struct node *successor(struct node *);
+struct node *predecessor(struct node *);
 
 void insert_node(struct node *, struct node *);
 void insert_int(struct node *, const int);
