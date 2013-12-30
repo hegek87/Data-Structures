@@ -22,9 +22,19 @@ void destroy_node(struct node *to_die){
 	free(to_die);
 }
 
+struct bs_tree *create_tree(const int x){
+	struct bs_tree *temp = create_empty_tree();
+	temp->size = 1;
+	temp->root = create_node(x);
+	return temp;
+}
 
-struct node *create_tree(const int x){
-	return create_node(x);
+struct bs_tree *create_empty_tree(void){
+	return malloc(sizeof(struct bs_tree));
+}
+
+void inorder(struct bs_tree *tree){
+	inorder_walk(tree->root);
 }
 
 void inorder_walk(struct node *root){
@@ -35,12 +45,20 @@ void inorder_walk(struct node *root){
 	}
 }
 
+void postorder(struct bs_tree *tree){
+	postorder_walk(tree->root);
+}
+
 void postorder_walk(struct node *root){
 	if(root){
 		postorder_walk(root->left);
 		postorder_walk(root->right);
 		printf("%d ", root->data);
 	}
+}
+
+void preorder(struct bs_tree *tree){
+	preorder_walk(tree->root);
 }
 
 void preorder_walk(struct node *root){
@@ -51,19 +69,27 @@ void preorder_walk(struct node *root){
 	}
 }
 
-struct node *tree_search(struct node *root, const int key){
+struct node *node_search(struct node *root, const int key){
 	if(!root || root->data == key){
 		return root;
 	}
 	else if(root->data < key){
-		return tree_search(root->right, key);
+		return node_search(root->right, key);
 	}
 	else{
-		return tree_search(root->left, key);
+		return node_search(root->left, key);
 	}
 }
+
+struct node *tree_search(struct bs_tree *tree, const int key){
+	return node_search(tree->root, key);
+}
 	
-struct node *iter_search(struct node *root, const int key){
+struct node *iter_search(struct bs_tree *tree, const int key){
+	return iter_search_node(tree->root, key);
+}
+
+struct node *iter_search_node(struct node *root, const int key){
 	struct node *temp = root;
 	while(temp && key != temp->data){
 		if(temp->data < key){
@@ -74,6 +100,14 @@ struct node *iter_search(struct node *root, const int key){
 		}
 	}
 	return temp;
+}
+
+struct node *tree_max(struct bs_tree *tree){
+	return max(tree->root);
+}
+
+struct node *tree_min(struct bs_tree *tree){
+	return min(tree->root);
 }
 
 struct node *max(struct node *root){
@@ -90,6 +124,14 @@ struct node *min(struct node *root){
 		temp = temp->left;
 	}
 	return temp;
+}
+
+struct node *tree_successor(struct bs_tree *tree){
+	return successor(tree->root);
+}
+
+struct node *tree_predecessor(struct bs_tree *tree){
+	return predecessor(tree->root);
 }
 
 struct node *successor(struct node *root){
@@ -118,6 +160,15 @@ struct node *predecessor(struct node *root){
 	return t1;
 }
 
+void tree_insert_node(struct bs_tree *tree, struct node *key){
+	insert_node(tree->root, key);
+	++(tree->size);
+}
+
+void insert_int(struct bs_tree *tree, const int x){
+	tree_insert_node(tree, create_node(x));
+}
+
 
 void insert_node(struct node *root, struct node *key){
 	struct node *x = root;
@@ -142,15 +193,19 @@ void insert_node(struct node *root, struct node *key){
 		y->right = key;
 	}
 }
-		
-			
-void insert_int(struct node *root, const int x){
-	insert_node(root, create_node(x));
-}
 
-void null_node(struct node **to_die){
-	*to_die = NULL;
-	return;
+struct node *delete_root(struct node *root){
+	struct node *y = successor(root), *temp = root;
+	if(root->right == y){
+		y->left = root->left;
+		root = y;
+		return temp;
+	}
+	else{
+		y->parent->left = y->right;
+		root->data = y->data;
+		return temp;
+	}
 }
 
 struct node *delete_node(struct node *root, struct node *key){
@@ -180,15 +235,17 @@ struct node *delete_node(struct node *root, struct node *key){
 	}
 	struct node *y = successor(key);
 	if(y->parent == key){
-		if(key->parent->left == key){
-			key->parent->left = y;
+		if(key->parent){
+			if(key->parent->left == key){
+				key->parent->left = y;
+			}
+			else{
+				key->parent->right = y;
+			}
+			y->left = key->left;
+			y->left->parent = y;
+			return key;
 		}
-		else{
-			key->parent->right = y;
-		}
-		y->left = key->left;
-		y->left->parent = y;
-		return key;
 	}
 	else{
 		y->parent->left = y->right;
@@ -201,35 +258,41 @@ struct node *delete_node(struct node *root, struct node *key){
 }
 
 struct node *delete_el(struct node *root, const int x){
-	return delete_node(root, iter_search(root, x));
+	return delete_node(root, iter_search_node(root, x));
 }
 
-void free_tree(struct node *root){
+void free_tree(struct bs_tree *tree){
+	free_tree_node(tree->root);
+}
+
+void free_tree_node(struct node *root){
 	if(root){
 		struct node *temp = root;
-		free_tree(temp->left);
-		free_tree(temp->right);
+		free_tree_node(temp->left);
+		free_tree_node(temp->right);
 		free(temp);
 	}
 }
 
 
 int main(void){
-	struct node *root = create_tree(50);
+	struct bs_tree *root = create_tree(50);
 	insert_int(root, 10);
-	insert_int(root, 76);
+	//insert_int(root, 76);
 	insert_int(root, 45);
-	insert_int(root, 72);
+	//insert_int(root, 72);
 	insert_int(root, 0);
-	insert_int(root, 91);
+	//insert_int(root, 91);
 	insert_int(root, 42);
 	insert_int(root, 64);
-	inorder_walk(root);
+	inorder(root);
 	printf("\n");
 	
-	delete_el(root, 91);
+	/*
+	delete_root(root);
 	inorder_walk(root);
 	printf("\n");
+	*/
 	
 	return 0;
 }
