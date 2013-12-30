@@ -34,4 +34,5 @@ struct node *delete_node(struct node *, struct node *);
 struct node *delete_el(struct node *, const int);
 
 void free_tree(struct node *);
+void null_node(struct node **);
 #endif
