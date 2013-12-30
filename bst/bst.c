@@ -35,6 +35,7 @@ struct bs_tree *create_empty_tree(void){
 
 void inorder(struct bs_tree *tree){
 	inorder_walk(tree->root);
+	printf("\n");
 }
 
 void inorder_walk(struct node *root){
@@ -47,6 +48,7 @@ void inorder_walk(struct node *root){
 
 void postorder(struct bs_tree *tree){
 	postorder_walk(tree->root);
+	printf("\n");
 }
 
 void postorder_walk(struct node *root){
@@ -59,6 +61,7 @@ void postorder_walk(struct node *root){
 
 void preorder(struct bs_tree *tree){
 	preorder_walk(tree->root);
+	printf("\n");
 }
 
 void preorder_walk(struct node *root){
@@ -126,14 +129,6 @@ struct node *min(struct node *root){
 	return temp;
 }
 
-struct node *tree_successor(struct bs_tree *tree){
-	return successor(tree->root);
-}
-
-struct node *tree_predecessor(struct bs_tree *tree){
-	return predecessor(tree->root);
-}
-
 struct node *successor(struct node *root){
 	struct node *temp = root;
 	if(temp->right){
@@ -194,16 +189,18 @@ void insert_node(struct node *root, struct node *key){
 	}
 }
 
-struct node *delete_root(struct node *root){
-	struct node *y = successor(root), *temp = root;
-	if(root->right == y){
-		y->left = root->left;
-		root = y;
+struct node *delete_root(struct bs_tree *tree){
+	struct node *y = successor(tree->root), *temp = tree->root;
+	if(tree->root->right == y){
+		y->left = tree->root->left;
+		tree->root = y;
 		return temp;
 	}
 	else{
 		y->parent->left = y->right;
-		root->data = y->data;
+		y->left = tree->root->left;
+		y->right = tree->root->right;
+		tree->root = y;
 		return temp;
 	}
 }
@@ -277,6 +274,7 @@ void free_tree_node(struct node *root){
 
 int main(void){
 	struct bs_tree *root = create_tree(50);
+	printf("Tree root: %d\n", root->root->data);
 	insert_int(root, 10);
 	//insert_int(root, 76);
 	insert_int(root, 45);
@@ -285,14 +283,14 @@ int main(void){
 	//insert_int(root, 91);
 	insert_int(root, 42);
 	insert_int(root, 64);
+	insert_int(root, 55);
+	printf("Root right child: %d\n", root->root->right->data);
 	inorder(root);
-	printf("\n");
 	
-	/*
+	
 	delete_root(root);
-	inorder_walk(root);
-	printf("\n");
-	*/
+	inorder(root);
+	
 	
 	return 0;
 }

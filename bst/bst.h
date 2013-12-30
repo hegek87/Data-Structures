@@ -38,8 +38,6 @@ struct node *tree_min(struct bs_tree *);
 struct node *max(struct node *);
 struct node *min(struct node *);
 
-struct node *tree_successor(struct bs_tree *);
-struct node *tree_predecessor(struct bs_tree *);
 struct node *successor(struct node *);
 struct node *predecessor(struct node *);
 
@@ -51,7 +49,7 @@ void insert_node(struct node *, struct node *);
 struct node *delete_node(struct node *, struct node *);
 struct node *delete_el(struct node *, const int);
 
-struct node *delete_root(struct node *);
+struct node *delete_root(struct bs_tree *);
 
 void free_tree(struct bs_tree *);
 void free_tree_node(struct node *);
