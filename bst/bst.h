@@ -46,8 +46,8 @@ void insert_int(struct bs_tree *, const int);
 
 void insert_node(struct node *, struct node *);
 
-struct node *delete_node(struct node *, struct node *);
-struct node *delete_el(struct node *, const int);
+struct node *delete_node(struct bs_tree *, struct node *);
+struct node *delete_el(struct bs_tree *, const int);
 
 struct node *delete_root(struct bs_tree *);
 
