@@ -254,13 +254,21 @@ struct node *delete_node(struct bs_tree *tree, struct node *key){
 			struct node *y;
 			printf("Deleting root\n");
 			if(key->right){
-				y = successor(root);
-				//splice out y
-				y->parent->left = y->right;
-				key->data = y->data;
+				printf("Has right child\n");
+				y = successor(key);
+				if(y->parent == key){
+					key->right = y->right;
+					key->data = y->data;
+				}
+				else{
+					//splice out y
+					y->parent->left = y->right;
+					key->data = y->data;
+				}
 			}
 			else{
-				y = predecessor(root);
+				printf("Has left child\n");
+				y = predecessor(key);
 				y->parent->right = y->left;
 				key->data = y->data;
 			}
@@ -273,16 +281,20 @@ struct node *delete_node(struct bs_tree *tree, struct node *key){
 		struct node *y = successor(key);
 		if(y->parent == key){
 			printf("Successor of key is a child\n");
-			key->parent->right = y;
-			y->left = key->left;
-			y->parent = key->parent;
+			if(key->parent){
+			printf("Key has parent\n");
+				key->parent->right = y;
+				y->left = key->left;
+				y->parent = key->parent;
+			}
+			else{
+				key->data = y->data;
+				key->right = y->right;
+			}
 		}
 		else{
 			printf("Successor of key is not a child\n");
 			y->parent->left = y->right;
-			//y->right = key->right;
-			//y->left = key->left;
-			//y->parent = key->parent;
 			key->data = y->data;
 		}
 	}
@@ -297,6 +309,7 @@ struct node *delete_el(struct bs_tree *tree, const int x){
 
 void free_tree(struct bs_tree *tree){
 	free_tree_node(tree->root);
+	free(tree);
 }
 
 void free_tree_node(struct node *root){
@@ -311,20 +324,39 @@ void free_tree_node(struct node *root){
 
 int main(void){
 	struct bs_tree *root = create_tree(50);
-	insert_int(root, 45);
-	insert_int(root, 60);
+	//insert_int(root, 47);
 	insert_int(root, 55);
-	insert_int(root, 70);
+	insert_int(root, 60);
+	insert_int(root, 65);
 	//insert_int(root, 65);
 	printf("Tree root: %d\n", root->root->data);
 	//printf("Root right child: %d\n", root->root->right->data);
 	inorder(root);
 	printf("%d\n", root->size);
 	
-	
+	//delete_el(root, 47);
+	//inorder(root);
+	delete_el(root, 50);
+	inorder(root);
+	delete_el(root, 55);
+	inorder(root);
 	delete_el(root, 60);
 	inorder(root);
+	delete_el(root, 65);
+	inorder(root);
+	
+	//struct node *temp, *t1;
+	/*
+	for(temp = tree_min(root); temp; temp = t1){
+		t1 = successor(temp);
+		delete_node(root, temp);
+		inorder(root);
+		printf("%d\n", root->size);
+	}*/
+	//delete_el(root, 50);
+	inorder(root);
 	printf("%d\n", root->size);
+	//free_tree(root);
 	
 	
 	return 0;
