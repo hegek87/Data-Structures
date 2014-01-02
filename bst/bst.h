@@ -51,6 +51,8 @@ struct node *delete_el(struct bs_tree *, const int);
 
 struct node *delete_root(struct bs_tree *);
 
+static void transplant(struct bs_tree *, struct node *, struct node *);
+
 void free_tree(struct bs_tree *);
 void free_tree_node(struct node *);
 #endif
