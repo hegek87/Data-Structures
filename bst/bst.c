@@ -206,13 +206,10 @@ struct node *delete_root(struct bs_tree *tree){
 }
 
 struct node *delete_node(struct bs_tree *tree, struct node *key){
-	//struct node *temp = tree->root;
-	//has no children
-	//this works properly
-	if(!key->left && !key->right){
-		//if key has a parent, tree->size > 1
+	struct node *y = key->left;
+	//Key has no children
+	if(!key->right && !key->left){
 		if(key->parent){
-			printf("Has parent\n");
 			if(key->parent->left == key){
 				key->parent->left = NULL;
 			}
@@ -220,88 +217,147 @@ struct node *delete_node(struct bs_tree *tree, struct node *key){
 				key->parent->right = NULL;
 			}
 		}
-		//if key doesn't have a parent, tree->size == 1
 		else{
 			tree->root = NULL;
-		}
-	}		
-	//has one child
-	else if(!key->left || !key->right){
-		//key is not the root
-		if(key->parent){
-			printf("Key has a parent\n");
-			if(key->right){
-				printf("Key has right child\n");
-				if(key->parent->right == key){
-					key->parent->right = key->right;
-				}
-				else{
-					key->parent->left = key->right;
-				}
-			}
-			else{
-				printf("Key has left child\n");
-				if(key->parent->right == key){
-					key->parent->right = key->left;
-				}
-				else{
-					key->parent->right = key->left;
-				}
-			}
-		}
-		//key is root
-		else{
-			struct node *y;
-			printf("Deleting root\n");
-			if(key->right){
-				printf("Has right child\n");
-				y = successor(key);
-				if(y->parent == key){
-					key->right = y->right;
-					key->data = y->data;
-				}
-				else{
-					//splice out y
-					y->parent->left = y->right;
-					key->data = y->data;
-				}
-			}
-			else{
-				printf("Has left child\n");
-				y = predecessor(key);
-				y->parent->right = y->left;
-				key->data = y->data;
-			}
-		}
-	}
-	//has both children
-	//this case works properly
-	else{
-		printf("Has two children\n");
-		struct node *y = successor(key);
-		if(y->parent == key){
-			printf("Successor of key is a child\n");
-			if(key->parent){
-			printf("Key has parent\n");
-				key->parent->right = y;
-				y->left = key->left;
-				y->parent = key->parent;
-			}
-			else{
-				key->data = y->data;
-				key->right = y->right;
-			}
-		}
-		else{
-			printf("Successor of key is not a child\n");
-			y->parent->left = y->right;
-			key->data = y->data;
 		}
 	}
 	--(tree->size);
 	return key;
 }
-			
+
+/*
+struct node *delete_node(struct bs_tree *tree, struct node *key){
+	struct node *root = tree->root;
+	//has no children
+	if(!key->left && !key->right){
+		printf("Key has no children\n");
+		//if key has a parent, tree->size > 1
+		if(key->parent){
+			printf("Not root\n");
+			if(key->parent->left == key){
+				printf("Left child of its parent\n");
+				key->parent->left = NULL;
+				key->parent = NULL;
+			}
+			else{
+				printf("Right child of its parent\n");
+				key->parent->right = NULL;
+				key->parent = NULL;
+			}
+		}
+		//if key doesn't have a parent, tree->size == 1
+		else{
+			tree->root = NULL;
+		}
+	}	
+	//has one child
+	else if(!key->left || !key->right){
+		printf("Has one child\n");
+		struct node *y = key->right;
+		//if key has a parent, simply splice it out
+		if(key->parent){
+			printf("HAS PARENT\n");
+			printf("ARGH: %d\n", key->parent->right->data);
+			//key has left child
+			struct node *temp = y ? y : key->left;
+			if(key->parent->left == key){
+				printf("IS LEFT CHILD\n");
+				key->parent->left = temp;
+				temp->parent = key->parent;
+				
+			}
+			else if(key->parent->right == key){
+				printf("IS RIGHT CHILD\n");
+				printf("KEY->RIGHT->DATA: %d\n", key->right->left->data);
+				//key->parent->right = temp;
+				temp->parent = key->parent;
+			}
+		}
+		//does not have a parent (i.e key is the root)
+		else{
+			printf("Key is root\n");
+			if(key->right){
+				printf("Has right child\n");
+				y = successor(key);
+				if(!y->right){
+					printf("Successor is a leaf\n");
+					y->parent->left = NULL;
+				}
+				else{
+					printf("Y->RIGHT==NULL? %d\n", y->right==NULL);
+					y->right->parent = y->parent;
+					y->parent->left = y->right;
+				}
+				tree->root = y;
+				y->right = key->right;
+				y->parent = NULL;
+			}
+			else{
+				printf("Has left child\n");
+				y = predecessor(key);
+				if(!y->left){
+					printf("Successor is a leaf\n");
+					y->parent->right = NULL;
+				}
+				else{
+					y->left->parent = y->parent;
+					y->parent->right = y->left;
+				}
+				key->data = y->data;
+			}
+		}
+	}
+	//has both children
+	else{
+		printf("Has two children\n");
+		struct node *y = successor(root);
+		//successor is a leaf
+		if(!y->right){
+			y->parent->left = NULL;
+			key->data = y->data;
+		}
+		else{
+			//keys child is the successor
+			if(key->right == y){
+				if(key->parent){
+					if(key->parent->right == key){
+						y->parent = key->parent;
+						key->parent->right = y;
+						y->left = key->left;
+					}
+					else{
+						y->parent = key->parent;
+						key->parent->left = y;
+						y->left = key->left;
+					}
+				}
+				//key is root
+				else{
+					y->left = key->left;
+					tree->root = y;
+				}
+			}
+			//successor is further down the tree
+			else{
+				if(key->parent){
+					y->parent->left = y->right;
+					y->parent = key->parent;
+					y->right = key->right;
+				}
+				//key is root
+				else{
+					y->parent->left = y->right;
+					y->left = key->left;
+					y->left = key->right;
+					tree->root = y;
+				}
+			}
+		}
+	}				
+	--(tree->size);
+	return key;
+}
+*/			
 
 struct node *delete_el(struct bs_tree *tree, const int x){
 	return delete_node(tree, iter_search(tree, x));
@@ -325,39 +381,39 @@ void free_tree_node(struct node *root){
 int main(void){
 	struct bs_tree *root = create_tree(50);
 	//insert_int(root, 47);
-	insert_int(root, 55);
-	insert_int(root, 60);
 	insert_int(root, 65);
-	//insert_int(root, 65);
-	printf("Tree root: %d\n", root->root->data);
-	//printf("Root right child: %d\n", root->root->right->data);
+	insert_int(root, 60);
+	insert_int(root, 55);
+	insert_int(root, 30);
+	insert_int(root, 20);
+	insert_int(root, 40);
+	insert_int(root, 5);
+	insert_int(root, 22);
+	insert_int(root, 25);
+	insert_int(root, 72);
+	insert_int(root, 95);
+	insert_int(root, 35);
+	insert_int(root, 75);
+	insert_int(root, 47);
+	insert_int(root, 78);
+	insert_int(root, 34);
+	insert_int(root, 76);
+	insert_int(root, 32);
 	inorder(root);
-	printf("%d\n", root->size);
+	printf("ROOT: %d\n", root->root->data);
 	
-	//delete_el(root, 47);
-	//inorder(root);
-	delete_el(root, 50);
-	inorder(root);
-	delete_el(root, 55);
-	inorder(root);
-	delete_el(root, 60);
-	inorder(root);
-	delete_el(root, 65);
-	inorder(root);
-	
-	//struct node *temp, *t1;
-	/*
+	struct node *temp, *t1;
 	for(temp = tree_min(root); temp; temp = t1){
 		t1 = successor(temp);
+		printf("Deleting %d\n", temp->data);
 		delete_node(root, temp);
+		//printf("ROOT: %d\n", root->root->data);
 		inorder(root);
-		printf("%d\n", root->size);
-	}*/
-	//delete_el(root, 50);
-	inorder(root);
-	printf("%d\n", root->size);
-	//free_tree(root);
+	}
+	//inorder(root);
 	
+	//delete_node(root, t1);
+	//inorder(root);
 	
 	return 0;
 }
