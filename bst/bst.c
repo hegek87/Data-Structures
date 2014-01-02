@@ -250,6 +250,7 @@ int main(void){
 	//insert_int(root, 47);
 	insert_int(root, 65);
 	insert_int(root, 60);
+	
 	insert_int(root, 55);
 	insert_int(root, 30);
 	insert_int(root, 20);
@@ -267,18 +268,21 @@ int main(void){
 	insert_int(root, 76);
 	insert_int(root, 32);
 	inorder(root);
+	
 	//printf("ROOT: %d\n", root->root->data);
+	
 	
 	struct node *temp, *t1;
 	for(temp = tree_min(root); temp; temp = t1){
 		t1 = successor(temp);
 		//printf("Deleting %d\n", temp->data);
-		delete_node(root, temp);
+		destroy_node(delete_node(root, temp));
 		//printf("ROOT: %d\n", root->root->data);
 		inorder(root);
 	}
-	//inorder(root);
 	
+	//inorder(root);
+	free_tree(root);
 	//delete_node(root, t1);
 	//inorder(root);
 	

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ "$1" = "r" ]]; then
+	make
+fi
+
+if [[ $? -eq 0 ]]; then
+	./objects/hash_table
+fi
+
+if [[ $? -eq 139 ]]; then
+	if [[ "$1" = "y" ]]; then
+		gdb ./objects/hash_table
+	fi
+fi
