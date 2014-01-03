@@ -45,7 +45,7 @@ void destroy_stack(struct stack *st){
 	free_list(st->top);
 	free(st);
 }
-
+/*
 int main(){
 	int x = 2, y =63, z = 145, m = 357;
 	struct stack *st = create_stack();
@@ -80,3 +80,4 @@ int main(){
 	destroy_stack(st);
 	return 0;
 }
+*/

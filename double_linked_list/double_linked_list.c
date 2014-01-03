@@ -15,7 +15,7 @@ struct node *create_empty_node(void){
 
 struct node *create_node(const void *key){
 	void *copy = malloc(sizeof(void *));
-	memcpy(copy, key, sizeof(key));
+	memcpy(copy, key, sizeof(void *));
 	struct node *temp = create_empty_node();
 	temp->data = copy;
 	temp->next = temp->prev = NULL;
