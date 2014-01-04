@@ -13,11 +13,9 @@ struct node *create_empty_node(void){
 	return temp;
 }
 
-struct node *create_node(const void *key){
-	void *copy = malloc(sizeof(void *));
-	memcpy(copy, key, sizeof(void *));
+struct node *create_node(void *key){
 	struct node *temp = create_empty_node();
-	temp->data = copy;
+	temp->data = key;
 	temp->next = temp->prev = NULL;
 	return temp;
 }
@@ -42,12 +40,12 @@ struct node *search(struct dl_list *list, const void *key, comp eq){
 	return cur;
 }
 
-void insert_el_head(struct dl_list *list, const void *key){
+void insert_el_head(struct dl_list *list, void *key){
 	struct node *temp = create_node(key);
 	insert_node_head(list, temp);
 }
 
-void insert_el_tail(struct dl_list *list, const void *key){
+void insert_el_tail(struct dl_list *list, void *key){
 	struct node *temp = create_node(key);
 	insert_node_tail(list, temp);
 }
@@ -78,7 +76,7 @@ void insert_node_tail(struct dl_list *list, struct node *temp){
 	++(list->size);
 }
 //if z>list->size, insert at tail;
-void insert_el_at(struct dl_list *list, const void *key, int z){
+void insert_el_at(struct dl_list *list, void *key, int z){
 	struct node *temp = create_node(key);
 	insert_node_at(list, temp, z);
 }
@@ -143,7 +141,7 @@ void delete_all(struct dl_list *list, const void *key, comp eq){
 }
 
 
-struct node *delete_el(struct dl_list *list, void *key, comp eq){
+struct node *delete_el(struct dl_list *list, const void *key, comp eq){
 	if(is_empty(list)){
 		return NULL;
 	}

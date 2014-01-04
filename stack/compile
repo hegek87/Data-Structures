@@ -1,9 +1,11 @@
 #!/bin/bash
- 
-make
+
+if [[ "$1" = "r" ]]; then
+	make
+fi
 
 if [[ $? -eq 0 ]]; then
-        ./objects/stack
+	./objects/stack
 fi
 
 if [[ $? -eq 139 ]]; then

@@ -15,22 +15,22 @@ struct dl_list{
 };
 
 struct node *create_empty_node(void);
-struct node *create_node(const void *);
+struct node *create_node(void *);
 void destroy_node(struct node *);
 
 struct dl_list *create_empty_list(void);
 
 struct node *search(struct dl_list *, const void *, comp);
 
-void insert_el_head(struct dl_list *, const void *);
-void insert_el_tail(struct dl_list *, const void *);
+void insert_el_head(struct dl_list *, void *);
+void insert_el_tail(struct dl_list *, void *);
 void insert_node_head(struct dl_list *, struct node *);
 void insert_node_tail(struct dl_list *, struct node *);
-void insert_el_at(struct dl_list *, const void *, int);
+void insert_el_at(struct dl_list *, void *, int);
 void insert_node_at(struct dl_list *, struct node *, int);
 
 void delete_all(struct dl_list *, const void *, comp);
-struct node *delete_el(struct dl_list *, void *, comp);
+struct node *delete_el(struct dl_list *, const void *, comp);
 struct node *delete_head(struct dl_list *);
 struct node *delete_tail(struct dl_list *);
 struct node *delete_at(struct dl_list *, int);
