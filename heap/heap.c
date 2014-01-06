@@ -42,7 +42,23 @@ struct heap *build_heap(int *heap_data, int heap_size){
 	return new_heap;
 }
 
-void heap_insert();
+void heap_insert(struct heap *heap, int key){
+	if(heap->heap_size >= heap->data_length){
+		int *temp = calloc(2*heap->heap_size, sizeof(int));
+		memcpy(temp, heap->data, sizeof(int));
+		heap->data = temp;
+	}
+	
+	heap->heap_size += 1;
+	*((heap->data)+(heap->heap_size)) = MIN_INT;
+	if(!heap_modify_key(heap, heap->heap_size, key)){
+		return;
+	}
+	*((heap->data)+(heap->heap_size)) = MAX_INT;
+	heap_modify_key(heap, heap->heap_size, key);
+	return;
+	
+}
 
 int heap_extract_top(struct heap *h){
 	if(h->heap_size < 0){
@@ -55,7 +71,19 @@ int heap_extract_top(struct heap *h){
 	return max;
 }
 
-void heap_increase_key(struct heap *, int, int);
+//returns 0 if successful, -1 if error occurs
+int heap_modify_key(struct heap *heap, int i, int key){
+	if(key HEAP_TYPE *((heap->data)+i)){
+		return -1;
+	}
+	*((heap->data)+i) = key;
+	int p = PARENT(i);
+	while(i > 0 && *((heap->data+p)) HEAP_TYPE *((heap->data)+i)){
+		swap(heap->data+p, heap->data+i);
+		i = p;
+	}
+	return 0;
+}
 
 int heap_top(struct heap *heap){
 	return *(heap->data);
@@ -84,6 +112,16 @@ int main(void){
 	int *x;
 	int arr[13] = {5,2, 4,12,42,5,25,63,2,6,24,13,2};
 	x=arr;
+	struct heap *h = build_heap(x, 12);
+	print_heap(h);
+	//heap_insert(h, 1700);
+	int i = h->heap_size+1;
+	while(i > 0){
+		printf("%d ", heap_extract_top(h));
+		--i;
+	}
+	printf("\n");
+	/*
 	int i = 0;
 	for(i = 0; i < 13; ++i){
 		printf("%d ", arr[i]);
@@ -100,5 +138,6 @@ int main(void){
 		printf("%d\n", heap_extract_top(t1));
 	}
 	//printf("\n");
+	*/
 	return 0;
 }
