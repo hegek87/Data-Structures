@@ -34,7 +34,6 @@ struct heap *build_heap(int *heap_data, int heap_size){
 	new_heap->heap_size = new_heap->data_length = heap_size;
 	int i = heap_size / 2;
 	while(i >= 0){
-		//printf("hapify(heap_data, %d, %d);\n", i, heap_size);
 		heapify(heap_data, i, heap_size);
 		--i;
 	}
@@ -44,14 +43,18 @@ struct heap *build_heap(int *heap_data, int heap_size){
 
 void heap_insert(struct heap *heap, int key){
 	if(heap->heap_size >= heap->data_length){
-		int *temp = calloc(2*heap->heap_size, sizeof(int));
-		memcpy(temp, heap->data, sizeof(int));
+		int *temp = malloc(2*heap->heap_size*sizeof(int));
+		int i;
+		for(i = 0; i <= heap->heap_size; ++i){
+			*(temp+i) = *((heap->data)+i);
+		}
 		heap->data = temp;
 	}
 	
 	heap->heap_size += 1;
 	*((heap->data)+(heap->heap_size)) = MIN_INT;
 	if(!heap_modify_key(heap, heap->heap_size, key)){
+		printf("In if\n");
 		return;
 	}
 	*((heap->data)+(heap->heap_size)) = MAX_INT;
@@ -73,14 +76,14 @@ int heap_extract_top(struct heap *h){
 
 //returns 0 if successful, -1 if error occurs
 int heap_modify_key(struct heap *heap, int i, int key){
-	if(key HEAP_TYPE *((heap->data)+i)){
+	if(!(key HEAP_TYPE *((heap->data)+i))){
 		return -1;
 	}
 	*((heap->data)+i) = key;
-	int p = PARENT(i);
-	while(i > 0 && *((heap->data+p)) HEAP_TYPE *((heap->data)+i)){
-		swap(heap->data+p, heap->data+i);
-		i = p;
+	while(i > 0 && 
+		!(*((heap->data+PARENT(i))) HEAP_TYPE *((heap->data)+i))){
+		swap(heap->data+PARENT(i), heap->data+i);
+		i = PARENT(i);
 	}
 	return 0;
 }
@@ -112,32 +115,11 @@ int main(void){
 	int *x;
 	int arr[13] = {5,2, 4,12,42,5,25,63,2,6,24,13,2};
 	x=arr;
-	struct heap *h = build_heap(x, 12);
-	print_heap(h);
-	//heap_insert(h, 1700);
-	int i = h->heap_size+1;
-	while(i > 0){
-		printf("%d ", heap_extract_top(h));
-		--i;
-	}
-	printf("\n");
-	/*
-	int i = 0;
+	heapsort(x, 13);
+	int i;
 	for(i = 0; i < 13; ++i){
-		printf("%d ", arr[i]);
+		printf("%d ", *(x+i));
 	}
 	printf("\n");
-	struct heap *t = build_heap(x, 12);
-	print_heap(t);
-	printf("Top element: %d\n", heap_top(t));
-	int arr1[10] = {10,9,8,7,6,5,4,3,2,1};
-	struct heap *t1 = build_heap(arr1, 9);
-	//heapsort(arr1, 10);
-	
-	for(i = t1->heap_size;i >= 0; --i){
-		printf("%d\n", heap_extract_top(t1));
-	}
-	//printf("\n");
-	*/
 	return 0;
 }
