@@ -5,13 +5,26 @@
 #include <stddef.h>
 #include "bst.h"
 
+/*
+	Binary search tree which has arbitrary data in the nodes,
+	in order to use the implementation, the user must supply
+	a comparison function to compare two nodes data element,
+	and a function which can print a void pointer in some way.
+	
+	We must have: 	eq(a,b)  <  0 if a <  b
+				eq(a,b)  == 0 if a == b
+				eq(a,b)  >  0 if a >  b
+				
+	where eq is our comp function.
+*/
+
 struct node *create_empty_node(void){
 	struct node *temp = malloc(sizeof(struct node));
 	temp->left = temp->right = temp->parent = NULL;
 	return temp;
 }
 
-struct node *create_node(const int key){
+struct node *create_node(void *key){
 	struct node *temp = create_empty_node();
 	temp->data = key;
 	temp->left = temp->right = temp->parent = NULL;
@@ -22,7 +35,7 @@ void destroy_node(struct node *to_die){
 	free(to_die);
 }
 
-struct bs_tree *create_tree(const int x){
+struct bs_tree *create_tree(void *x){
 	struct bs_tree *temp = create_empty_tree();
 	temp->size = 1;
 	temp->root = create_node(x);
@@ -33,69 +46,69 @@ struct bs_tree *create_empty_tree(void){
 	return malloc(sizeof(struct bs_tree));
 }
 
-void inorder(struct bs_tree *tree){
-	inorder_walk(tree->root);
+void inorder(struct bs_tree *tree, print pr){
+	inorder_walk(tree->root, pr);
 	printf("\n");
 }
 
-void inorder_walk(struct node *root){
+void inorder_walk(struct node *root, print pr){
 	if(root){
-		inorder_walk(root->left);
-		printf("%d ", root->data);
-		inorder_walk(root->right);
+		inorder_walk(root->left, pr);
+		pr(root->data);
+		inorder_walk(root->right, pr);
 	}
 }
 
-void postorder(struct bs_tree *tree){
-	postorder_walk(tree->root);
+void postorder(struct bs_tree *tree, print pr){
+	postorder_walk(tree->root, pr);
 	printf("\n");
 }
 
-void postorder_walk(struct node *root){
+void postorder_walk(struct node *root, print pr){
 	if(root){
-		postorder_walk(root->left);
-		postorder_walk(root->right);
-		printf("%d ", root->data);
+		postorder_walk(root->left, pr);
+		postorder_walk(root->right, pr);
+		pr(root->data);
 	}
 }
 
-void preorder(struct bs_tree *tree){
-	preorder_walk(tree->root);
+void preorder(struct bs_tree *tree, print pr){
+	preorder_walk(tree->root, pr);
 	printf("\n");
 }
 
-void preorder_walk(struct node *root){
+void preorder_walk(struct node *root, print pr){
 	if(root){
-		printf("%d ", root->data);
-		preorder_walk(root->left);
-		preorder_walk(root->right);
+		pr(root->data);
+		preorder_walk(root->left, pr);
+		preorder_walk(root->right, pr);
 	}
 }
 
-struct node *node_search(struct node *root, const int key){
+struct node *node_search(struct node *root, void *key, comp eq){
 	if(!root || root->data == key){
 		return root;
 	}
-	else if(root->data < key){
-		return node_search(root->right, key);
+	else if(eq(root->data, key) < 0){
+		return node_search(root->right, key, eq);
 	}
 	else{
-		return node_search(root->left, key);
+		return node_search(root->left, key, eq);
 	}
 }
 
-struct node *tree_search(struct bs_tree *tree, const int key){
-	return node_search(tree->root, key);
+struct node *tree_search(struct bs_tree *tree, void *key, comp eq){
+	return node_search(tree->root, key, eq);
 }
 	
-struct node *iter_search(struct bs_tree *tree, const int key){
-	return iter_search_node(tree->root, key);
+struct node *iter_search(struct bs_tree *tree, void *key, comp eq){
+	return iter_search_node(tree->root, key, eq);
 }
 
-struct node *iter_search_node(struct node *root, const int key){
+struct node *iter_search_node(struct node *root, void *key, comp eq){
 	struct node *temp = root;
 	while(temp && key != temp->data){
-		if(temp->data < key){
+		if(eq(temp->data, key) < 0){
 			temp = temp->right;
 		}
 		else{
@@ -155,22 +168,22 @@ struct node *predecessor(struct node *root){
 	return t1;
 }
 
-void tree_insert_node(struct bs_tree *tree, struct node *key){
-	insert_node(tree->root, key);
+void tree_insert_node(struct bs_tree *tree, struct node *key, comp eq){
+	insert_node(tree->root, key, eq);
 	++(tree->size);
 }
 
-void insert_int(struct bs_tree *tree, const int x){
-	tree_insert_node(tree, create_node(x));
+void insert_int(struct bs_tree *tree, int x){
+	tree_insert_node(tree, create_node((void *)&x), (comp)int_comp);
 }
 
 
-void insert_node(struct node *root, struct node *key){
+void insert_node(struct node *root, struct node *key, comp eq){
 	struct node *x = root;
 	struct node *y = NULL;
 	while(x){
 		y = x;
-		if(x->data < key->data){
+		if(eq(x->data, key->data) < 0){
 			x = x->right;
 		}
 		else{
@@ -181,7 +194,7 @@ void insert_node(struct node *root, struct node *key){
 	if(!y){
 		root = key;
 	}
-	else if(key->data < y->data){
+	else if(eq(key->data, y->data) < 0){
 		y->left = key;
 	}
 	else{
@@ -204,7 +217,7 @@ static void transplant(struct bs_tree *tree, struct node *u, struct node *v){
 	}
 }
 
-struct node *delete_node(struct bs_tree *tree, struct node *key){
+struct node *delete_node(struct bs_tree *tree, struct node *key, comp eq){
 	if(!key->left){
 		transplant(tree, key, key->right);
 	}
@@ -213,7 +226,7 @@ struct node *delete_node(struct bs_tree *tree, struct node *key){
 	}
 	else{
 		struct node *y = min(key->right);
-		if(y->parent != key){
+		if(eq(y->parent, key)){
 			transplant(tree, y, y->right);
 			y->right = key->right;
 			y->right->parent = y;
@@ -226,8 +239,13 @@ struct node *delete_node(struct bs_tree *tree, struct node *key){
 	return key;
 }
 
-struct node *delete_el(struct bs_tree *tree, const int x){
-	return delete_node(tree, iter_search(tree, x));
+struct node *delete_el(struct bs_tree *tree, void *x, comp eq){
+	return delete_node(tree, iter_search(tree, x, eq), eq);
+}
+
+struct node *delete_int(struct bs_tree *tree, int x){
+	comp eq = (comp)int_comp;
+	return delete_el(tree, iter_search(tree, (void *)&x, eq), eq);
 }
 
 void free_tree(struct bs_tree *tree){
@@ -244,13 +262,23 @@ void free_tree_node(struct node *root){
 	}
 }
 
+int int_comp(int *x, int *y){
+	return (*x < *y) ? -1 : (*x > *y) ? 1 : 0;
+}
+
+void int_print(int *x){
+	printf("%d ", *x);
+}
+
 
 int main(void){
-	struct bs_tree *root = create_tree(50);
+	int x = 50;
+	struct bs_tree *root = create_tree((void *)&x);
 	//insert_int(root, 47);
-	insert_int(root, 65);
+	int a = 65;
+	insert_int(root, a);
 	insert_int(root, 60);
-	
+	/*
 	insert_int(root, 55);
 	insert_int(root, 30);
 	insert_int(root, 20);
@@ -267,7 +295,9 @@ int main(void){
 	insert_int(root, 34);
 	insert_int(root, 76);
 	insert_int(root, 32);
-	inorder(root);
+	*/
+	printf("%d\n", *((int *)(root->root->right->data)));
+	inorder(root, (print)int_print);
 	
 	//printf("ROOT: %d\n", root->root->data);
 	
@@ -276,9 +306,9 @@ int main(void){
 	for(temp = tree_min(root); temp; temp = t1){
 		t1 = successor(temp);
 		//printf("Deleting %d\n", temp->data);
-		destroy_node(delete_node(root, temp));
+		destroy_node(delete_node(root, temp, (comp)int_comp));
 		//printf("ROOT: %d\n", root->root->data);
-		inorder(root);
+		inorder(root, (print)int_print);
 	}
 	
 	//inorder(root);
