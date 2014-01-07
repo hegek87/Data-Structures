@@ -5,14 +5,20 @@
 #include <stddef.h>
 #include "linked_list.h"
 
+/*
+	The comparison functions comp must be defined in the
+	following way:
+				eq(a,b) <  0 iff a <  b
+				eq(a,b) == 0 iff a == b
+				eq(a,b) >  0 iff a >  b
+*/
+
 struct node *create_empty_node(void){
 	return malloc(sizeof(struct node));
 }
-struct node *create_node(const void *data){
-	void *copy_data = malloc(sizeof(void *));
-	memcpy(copy_data, data, sizeof(void *));
+struct node *create_node(void *data){
 	struct node *temp = create_empty_node();
-	temp->data = copy_data;
+	temp->data = data;
 	return temp;
 }
 
@@ -24,13 +30,12 @@ struct slist *create_empty_list(void){
 }
 
 void destroy_node(struct node *to_die){
-	free(to_die->data);
 	free(to_die);
 }
 
-struct node *search(struct slist *list, const void *key, comp eq){
+struct node *search(struct slist *list, void *key, comp eq){
 	struct node *cur = list->head;
-	while(cur && !eq(cur->data, key)){
+	while(cur && eq(cur->data, key)){
 		cur = cur->next;
 	}
 	return cur;
@@ -42,13 +47,13 @@ void insert_node_head(struct slist *list, struct node *x){
 	++(list->size);
 }
 
-void insert_el_head(struct slist *list, const void *data){
+void insert_el_head(struct slist *list, void *data){
 	struct node *to_insert = create_node(data);
 	insert_node_head(list, to_insert);
 }
 
 //inserts after the zth node in the list or if list.size < z, insert at tail
-void insert_el_at(struct slist *list, const void *key, int z){
+void insert_el_at(struct slist *list, void *key, int z){
 	struct node *x = create_node(key);
 	insert_node_at(list, x, z);
 }
@@ -78,7 +83,7 @@ void print_list(const struct slist *list){
 }
 
 //deletes every appearance of key
-void delete_all(struct slist *list, const void *key, comp eq){
+void delete_all(struct slist *list, void *key, comp eq){
 	//nothing to delete
 	if(is_empty(list)){
 		return;
@@ -87,7 +92,7 @@ void delete_all(struct slist *list, const void *key, comp eq){
 	struct node *prev = cur;
 	while(cur){
 		// key found
-		if(eq(cur->data, key)){
+		if(!eq(cur->data, key)){
 			//cur is the head
 			if(list->head == cur){
 				destroy_node(delete_head(list));
@@ -109,7 +114,7 @@ void delete_all(struct slist *list, const void *key, comp eq){
 }
 
 //deletes the first appearance of key
-struct node *delete_el(struct slist *list, const void *key, comp eq){
+struct node *delete_el(struct slist *list, void *key, comp eq){
 	if(is_empty(list)){
 		return NULL;
 	}
@@ -120,7 +125,7 @@ struct node *delete_el(struct slist *list, const void *key, comp eq){
 	struct node *prev;
 	struct node *cur = list->head;
 	//find key
-	while(!eq(cur->data, key) && cur){
+	while(eq(cur->data, key) && cur){
 		prev = cur;
 		cur = cur->next;
 	}
@@ -202,7 +207,9 @@ void free_list(struct slist *list){
 }
 
 int is_empty(const struct slist *list){ return !size(list); }
-int numcmp(const int *x, const int *y){ return *x == *y; }
+int numcmp(const int *x, const int *y){ 
+	return (*x < *y) ? -1 : (*x > *y) ? 1 : 0;
+}
 
 int main(){ 
 	int *p = (int *)malloc(sizeof(int *));
@@ -233,7 +240,7 @@ int main(){
 	temp = search(head, (void *)&m, (comp)numcmp);
 	printf("Is it found? %d\n", (temp == NULL) ? 0 : *((int *)temp->data));
 	
-	free(p);
+	//free(p);
 	print_list(head);
 	delete_all(head, (void *)&y, (comp)numcmp);
 	print_list(head);
