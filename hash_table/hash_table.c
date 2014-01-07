@@ -16,37 +16,38 @@
 	delete functions.
 */
 
-int hash(struct hash_table *table, void *el){
-	int *x = (int *)el;
-	return *el % table->size;
+int int_hash(struct hash_table *table, const int *el){
+	return *el % table->table_size;
 }
 
 struct hash_table *init_table(int size){
-	struct hash_table *temp = malloc(sizeof(hash_table));
+	struct hash_table *temp = malloc(sizeof(struct hash_table));
 	temp->table_size = size;	
 	temp->table = malloc(size * sizeof(struct dl_list));
 	return temp;
 }
 
-void *hash_delete(struct hash_table *h_table, void *el, comp eq){
-	struct node *temp = hash_search(h_table, el, eq);
-	if(!temp){
+void *hash_delete(struct hash_table *h_table, void *el, comp eq, hash h){
+	struct node *temp = hash_search(h_table, el, eq, h);
+	if(temp){
 		void *retval = temp->data;
-		delete_node((h_table->table + hash(h_table, el)), temp);
+		delete_node(*(h_table->table + h(h_table, el)), temp);
 		free(temp);
 		return retval;
 	}
 	return NULL;
 }
 	
-struct node *hash_search(struct hash_table *h_table, const void *el, comp eq){
-	int hash_val = hash(h_table, el);
-	if(!(h_table->table+hash_val)){
+struct node *hash_search(struct hash_table *h_table, const void *el,
+					 comp eq, hash h){
+	int hash_val = h(h_table, el);
+	if(!*(h_table->table+hash_val)){
 		return NULL;
 	}
-	struct node *cur_node = (h_table->table+hash_val)->head;
+	struct dl_list *temp = *(h_table->table+hash_val);
+	struct node *cur_node = temp->head;
 	while(cur_node){
-		if(eq(cur_node->data, el)){
+		if(!eq(cur_node->data, el)){
 			return cur_node;
 		}
 		cur_node = cur_node->next;
@@ -54,16 +55,58 @@ struct node *hash_search(struct hash_table *h_table, const void *el, comp eq){
 	return NULL;
 }
 	
-int hash_insert(struct hash_table *h_table, void *el)
-	int hash_val = hash(h_table, el);
-	if(!(h_table->table + hash_val)){
-		h_table->table+hash_val = create_empty_list();
+int hash_insert(struct hash_table *h_table, void *el, hash h){
+	int hash_val = h(h_table, el);
+	if(!*(h_table->table + hash_val)){
+		*(h_table->table + hash_val) = create_empty_list();
 	}
-	insert_el_head(h_table->table+hash_val, el);
+	insert_el_head(*(h_table->table+hash_val), el);
 	return 0;
 }
 
+void display_hash_table(struct hash_table *h_table){
+	int i;
+	for(i = 0; i < h_table->table_size; ++i){
+		printf("List in slot %d:\n", i);
+		struct dl_list *temp = *(h_table->table + i);
+		print_list(temp);
+	}
+}
+
+int int_comp(int *x, int *y){
+	return (*x < *y) ? -1 : (*x > *y) ? 1 : 0;
+}
+
 int main(void){
-	printf("HI\n");
+	struct hash_table *ht = init_table(15);
+	comp c = (comp)int_comp;
+	hash h = (hash)int_hash;
+	int j = 32, i;
+	int p[15] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+	hash_insert(ht, (void *)&j, h);
+	
+	for(i = 0; i < 15; ++i){
+		hash_insert(ht, (void *)&p[i], h);
+	}
+	
+	int a = 48;
+	hash_insert(ht, (void *)&a, h);
+	
+	display_hash_table(ht);
+	
+	struct node *test = hash_search(ht, &a, c, h);
+	if(test){
+		int *y = (int *)test->data;
+		printf("We have found %d\n", *y);
+	}
+	void *m = hash_delete(ht, &a, c, h);
+	display_hash_table(ht);
+	if(m){
+		printf("Data deleted: %d\n", *((int *)m));
+	}
+	int k = 3;
+	hash_delete(ht, &k, c, h);
+	display_hash_table(ht);
+	
 	return 0;
 }

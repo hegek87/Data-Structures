@@ -238,7 +238,7 @@ struct node *delete_int(struct dl_list *list, int z){
 	
 
 void print_list(const struct dl_list *list){
-	if(list->size == 0){
+	if(!list){
 		return;
 	}
 	int i = 0;
