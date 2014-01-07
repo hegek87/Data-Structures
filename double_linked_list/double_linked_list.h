@@ -1,6 +1,6 @@
 #ifndef DLL_H
 #define DLL_H
-typedef int(*comp)(const void *, const void *);
+typedef int (*comp)(const void *, const void *);
 //TEST
 struct node{
 	void *data;
