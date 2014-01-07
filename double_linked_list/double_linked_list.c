@@ -21,7 +21,6 @@ struct node *create_node(void *key){
 }
 
 void destroy_node(struct node *to_die){
-	free(to_die->data);
 	free(to_die);
 }
 
@@ -75,6 +74,7 @@ void insert_node_tail(struct dl_list *list, struct node *temp){
 	list->tail = temp;
 	++(list->size);
 }
+
 //if z>list->size, insert at tail;
 void insert_el_at(struct dl_list *list, void *key, int z){
 	struct node *temp = create_node(key);

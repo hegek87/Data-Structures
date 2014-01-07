@@ -77,6 +77,17 @@ int int_comp(int *x, int *y){
 	return (*x < *y) ? -1 : (*x > *y) ? 1 : 0;
 }
 
+void destroy_table(struct hash_table *h_table){
+	//free all lists
+	int i = 0;
+	while(i < h_table->table_size){
+		free_list(*(h_table->table+i));
+		++i;
+	}
+	free(h_table->table);
+	free(h_table);
+}
+
 int main(void){
 	struct hash_table *ht = init_table(15);
 	comp c = (comp)int_comp;
@@ -107,6 +118,8 @@ int main(void){
 	int k = 3;
 	hash_delete(ht, &k, c, h);
 	display_hash_table(ht);
+	
+	destroy_table(ht);
 	
 	return 0;
 }

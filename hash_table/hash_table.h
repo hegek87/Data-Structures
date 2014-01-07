@@ -21,4 +21,6 @@ int int_comp(int *x, int *y);
 
 void display_hash_table(struct hash_table *);
 
+void destroy_table(struct hash_table *h_table);
+
 #endif
