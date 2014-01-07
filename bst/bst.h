@@ -45,7 +45,8 @@ struct node *successor(struct node *);
 struct node *predecessor(struct node *);
 
 void tree_insert_node(struct bs_tree *, struct node *, comp);
-void insert_int(struct bs_tree *, int);
+void insert_el(struct bs_tree *, void *, comp);
+void insert_int(struct bs_tree *, int *);
 
 void insert_node(struct node *, struct node *, comp);
 

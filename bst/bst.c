@@ -173,8 +173,12 @@ void tree_insert_node(struct bs_tree *tree, struct node *key, comp eq){
 	++(tree->size);
 }
 
-void insert_int(struct bs_tree *tree, int x){
-	tree_insert_node(tree, create_node((void *)&x), (comp)int_comp);
+void insert_el(struct bs_tree *tree, void *el, comp eq){
+	tree_insert_node(tree, create_node(el), eq);
+}
+
+void insert_int(struct bs_tree *tree, int *x){
+	insert_el(tree, (void *)x, (comp)int_comp);
 }
 
 
@@ -272,49 +276,39 @@ void int_print(int *x){
 
 
 int main(void){
-	int x = 50;
-	struct bs_tree *root = create_tree((void *)&x);
-	//insert_int(root, 47);
-	int a = 65;
-	insert_int(root, a);
-	insert_int(root, 60);
-	/*
-	insert_int(root, 55);
-	insert_int(root, 30);
-	insert_int(root, 20);
-	insert_int(root, 40);
-	insert_int(root, 5);
-	insert_int(root, 22);
-	insert_int(root, 25);
-	insert_int(root, 72);
-	insert_int(root, 95);
-	insert_int(root, 35);
-	insert_int(root, 75);
-	insert_int(root, 47);
-	insert_int(root, 78);
-	insert_int(root, 34);
-	insert_int(root, 76);
-	insert_int(root, 32);
-	*/
-	printf("%d\n", *((int *)(root->root->right->data)));
+	int arr[19] = {50,65,60,55,30,20,40,5,22,25,
+				72,95,35,75,47,78,34,76,32};
+	int i=0;
+	struct bs_tree *root = create_tree((void *)&arr[i++]);
+	
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
+	insert_int(root, &arr[i++]);
 	inorder(root, (print)int_print);
-	
-	//printf("ROOT: %d\n", root->root->data);
-	
 	
 	struct node *temp, *t1;
 	for(temp = tree_min(root); temp; temp = t1){
 		t1 = successor(temp);
-		//printf("Deleting %d\n", temp->data);
 		destroy_node(delete_node(root, temp, (comp)int_comp));
-		//printf("ROOT: %d\n", root->root->data);
 		inorder(root, (print)int_print);
 	}
 	
-	//inorder(root);
 	free_tree(root);
-	//delete_node(root, t1);
-	//inorder(root);
 	
 	return 0;
 }
