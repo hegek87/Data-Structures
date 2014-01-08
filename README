@@ -1,0 +1,28 @@
+This repository provides a set of basic, generic data structures. These data structures store all data as void pointers and expect certain functions to be provided in order to work properly. It is the programmers responsibility to ensure that the data type stored in a data structure is properly cast.
+
+Below we have more detailed descriptions of the data structures, which include the structure of each element in the data structure. We will describe the type of functions which must be implemented in order for the data structure to work properly.
+
+Binary Search Tree ----
+	Each element in our Binary Search Tree (bst for short) is stored inside 
+	of a node which has a reference to nodes representing the parent node, 
+	and a  left, right child. Each node also contains a void pointer to the
+	actual data being stored. The actual tree is represented as an object
+	which points to the root of the tree and manages the size of the tree.
+	The following two functions are required for a proper implementation of
+	a bst:
+		typedef int (*comp)(void *, void *);
+		typedef void (*print)(void *);
+	The print function is provided in a way which allows us to print the tree
+	as preorder, postorder, and inorder. We've provided a default implementa-
+	tation which assumes integer data, and simply prints the element as if it
+	where an integer. As is normal with a binary tree, we expect for any node
+	x in the tree, the following inequality holds:
+			x->left->data < x->data < x->right->data.
+	The implementation of the comp function allows the inequality to hold. We
+	must have:
+				eq(a,b)  <  0 if a <  b
+				eq(a,b)  == 0 if a == b
+				eq(a,b)  >  0 if a >  b,
+	where eq is of type comp.
+	
+
