@@ -15,19 +15,22 @@
 struct heap{
 	int heap_size;
 	int data_length;
-	int *data;
+	void *data;
 };
+
+typedef int (*comp)(void *, void *);
+typedef void (*print)(void *);
 
 int max(int, int, int);
 
-void heapify(int *, int, int);
-struct heap *build_heap(int *, int);
+void heapify(int *, int, int, comp);
+struct heap *build_heap(int *, int, comp);
 void insert(struct heap *, int);
-int heap_extract_top(struct heap *);
+int heap_extract_top(struct heap *, comp);
 int heap_modify_key(struct heap *, int, int);
 int heap_top(struct heap *);
-void print_heap(struct heap *);
+void print_heap(struct heap *, print);
 
-void heapsort(int[], int);
+void heapsort(int[], int, comp);
 
 #endif
