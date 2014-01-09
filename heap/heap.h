@@ -1,6 +1,6 @@
 #ifndef HEAP_H
 #define HEAP_H
-#define HEAP_TYPE MAX
+#define HEAP_TYPE MIN
 #define MAX >
 #define MIN <
 
@@ -15,7 +15,7 @@
 struct heap{
 	int heap_size;
 	int data_length;
-	void *data;
+	int *data;
 };
 
 typedef int (*comp)(void *, void *);
@@ -23,14 +23,14 @@ typedef void (*print)(void *);
 
 int max(int, int, int);
 
-void heapify(int *, int, int, comp);
-struct heap *build_heap(int *, int, comp);
+void heapify(int *, int, int);
+struct heap *build_heap(int *, int);
 void insert(struct heap *, int);
-int heap_extract_top(struct heap *, comp);
+int heap_extract_top(struct heap *);
 int heap_modify_key(struct heap *, int, int);
 int heap_top(struct heap *);
-void print_heap(struct heap *, print);
+void print_heap(struct heap *);
 
-void heapsort(int[], int, comp);
+void heapsort(int *, int);
 
 #endif
