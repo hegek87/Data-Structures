@@ -2,6 +2,10 @@ This repository provides a set of basic, generic data structures. These data str
 
 Below we have more detailed descriptions of the data structures, which include the structure of each element in the data structure. We will describe the type of functions which must be implemented in order for the data structure to work properly.
 
+WARNING WARNING WARNING
+
+Currently it is very important that the directory structure remains as is. We use inlcludes which are based on current and previous directories currently.
+
 Binary Search Tree ----
 	Each element in our Binary Search Tree (bst for short) is stored inside  of a node which has a reference to nodes representing the parent node, and a  left, right child. Each node also contains a void pointer to the actual data being stored. The actual tree is represented as an object which points to the root of the tree and manages the size of the tree. The following two functions are required for a proper implementation of a bst:
 		typedef int (*comp)(void *, void *);
