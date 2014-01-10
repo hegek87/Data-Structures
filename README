@@ -14,4 +14,20 @@ Binary Search Tree ----
 				eq(a,b)  >  0 if a >  b,
 	where eq is of type comp.
 	
-
+Double Linked List ----
+	Each element in our list is stored in a node containng a previous and next node. As with the bst, we require the print function andcomparison function. The list itself bs_list has a pointer to the head and tail of the list.
+	
+Linked List ----
+	Each element in this singly linked list is contained in a node which has a void * for the data. The node has a link to the next node in the list. We require a comparison function to be defined for the given data type.
+	
+Hash Table ----
+	The hash table stores any element as a void *, we represent the hash table as a list of lists (dl_list **), and we use chaining for elements with the same hash. We require users to define a comparison function to compare two void * as above, as well as a hash function, which tells us where to index into our file.
+	
+Heap ----
+	Depending on how we define HEAP_TYPE, we have a max heap and a min heap. For ease, our heap current stores integer data.
+	
+Queue ----
+	This FIFO queue is represented by a dl_list, and gives operations to remove from the head and insert at the tail.
+	
+Stack ----
+	This stack is LIFO, and is again represented by a dl_list, allowing us to push and pop by inserting and deleting at the head.
