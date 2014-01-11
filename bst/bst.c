@@ -18,20 +18,20 @@
 	where eq is our comp function.
 */
 
-struct node *create_empty_node(void){
-	struct node *temp = malloc(sizeof(struct node));
+struct t_node *create_empty_node(void){
+	struct t_node *temp = malloc(sizeof(struct t_node));
 	temp->left = temp->right = temp->parent = NULL;
 	return temp;
 }
 
-struct node *create_node(void *key){
-	struct node *temp = create_empty_node();
+struct t_node *create_node(void *key){
+	struct t_node *temp = create_empty_node();
 	temp->data = key;
 	temp->left = temp->right = temp->parent = NULL;
 	return temp;
 }
 
-void destroy_node(struct node *to_die){
+void destroy_node(struct t_node *to_die){
 	free(to_die);
 }
 
@@ -51,7 +51,7 @@ void inorder(struct bs_tree *tree, print pr){
 	printf("\n");
 }
 
-void inorder_walk(struct node *root, print pr){
+void inorder_walk(struct t_node *root, print pr){
 	if(root){
 		inorder_walk(root->left, pr);
 		pr(root->data);
@@ -64,7 +64,7 @@ void postorder(struct bs_tree *tree, print pr){
 	printf("\n");
 }
 
-void postorder_walk(struct node *root, print pr){
+void postorder_walk(struct t_node *root, print pr){
 	if(root){
 		postorder_walk(root->left, pr);
 		postorder_walk(root->right, pr);
@@ -77,7 +77,7 @@ void preorder(struct bs_tree *tree, print pr){
 	printf("\n");
 }
 
-void preorder_walk(struct node *root, print pr){
+void preorder_walk(struct t_node *root, print pr){
 	if(root){
 		pr(root->data);
 		preorder_walk(root->left, pr);
@@ -85,7 +85,7 @@ void preorder_walk(struct node *root, print pr){
 	}
 }
 
-struct node *node_search(struct node *root, void *key, comp eq){
+struct t_node *node_search(struct t_node *root, void *key, comp eq){
 	if(!root || root->data == key){
 		return root;
 	}
@@ -97,16 +97,16 @@ struct node *node_search(struct node *root, void *key, comp eq){
 	}
 }
 
-struct node *tree_search(struct bs_tree *tree, void *key, comp eq){
+struct t_node *tree_search(struct bs_tree *tree, void *key, comp eq){
 	return node_search(tree->root, key, eq);
 }
 	
-struct node *iter_search(struct bs_tree *tree, void *key, comp eq){
+struct t_node *iter_search(struct bs_tree *tree, void *key, comp eq){
 	return iter_search_node(tree->root, key, eq);
 }
 
-struct node *iter_search_node(struct node *root, void *key, comp eq){
-	struct node *temp = root;
+struct t_node *iter_search_node(struct t_node *root, void *key, comp eq){
+	struct t_node *temp = root;
 	while(temp && key != temp->data){
 		if(eq(temp->data, key) < 0){
 			temp = temp->right;
@@ -118,36 +118,36 @@ struct node *iter_search_node(struct node *root, void *key, comp eq){
 	return temp;
 }
 
-struct node *tree_max(struct bs_tree *tree){
+struct t_node *tree_max(struct bs_tree *tree){
 	return max(tree->root);
 }
 
-struct node *tree_min(struct bs_tree *tree){
+struct t_node *tree_min(struct bs_tree *tree){
 	return min(tree->root);
 }
 
-struct node *max(struct node *root){
-	struct node *temp = root;
+struct t_node *max(struct t_node *root){
+	struct t_node *temp = root;
 	while(temp->right){
 		temp = temp->right;
 	}
 	return temp;
 }
 
-struct node *min(struct node *root){
-	struct node *temp = root;
+struct t_node *min(struct t_node *root){
+	struct t_node *temp = root;
 	while(temp->left){
 		temp = temp->left;
 	}
 	return temp;
 }
 
-struct node *successor(struct node *root){
-	struct node *temp = root;
+struct t_node *successor(struct t_node *root){
+	struct t_node *temp = root;
 	if(temp->right){
 		return min(temp->right);
 	}
-	struct node *t1 = temp->parent;
+	struct t_node *t1 = temp->parent;
 	while(t1 && t1->right == temp){
 		temp = t1;
 		t1 = t1->parent;
@@ -155,12 +155,12 @@ struct node *successor(struct node *root){
 	return t1;
 }
 
-struct node *predecessor(struct node *root){
-	struct node *temp = root;
+struct t_node *predecessor(struct t_node *root){
+	struct t_node *temp = root;
 	if(temp->left){
 		return max(temp->left);
 	}
-	struct node *t1 = temp->parent;
+	struct t_node *t1 = temp->parent;
 	while(t1 && temp == t1->left){
 		temp = t1;
 		t1 = t1->parent;
@@ -168,7 +168,7 @@ struct node *predecessor(struct node *root){
 	return t1;
 }
 
-void tree_insert_node(struct bs_tree *tree, struct node *key, comp eq){
+void tree_insert_node(struct bs_tree *tree, struct t_node *key, comp eq){
 	insert_node(tree->root, key, eq);
 	++(tree->size);
 }
@@ -182,9 +182,9 @@ void insert_int(struct bs_tree *tree, int *x){
 }
 
 
-void insert_node(struct node *root, struct node *key, comp eq){
-	struct node *x = root;
-	struct node *y = NULL;
+void insert_node(struct t_node *root, struct t_node *key, comp eq){
+	struct t_node *x = root;
+	struct t_node *y = NULL;
 	while(x){
 		y = x;
 		if(eq(x->data, key->data) < 0){
@@ -206,7 +206,8 @@ void insert_node(struct node *root, struct node *key, comp eq){
 	}
 }
 
-static void transplant(struct bs_tree *tree, struct node *u, struct node *v){
+static void transplant(struct bs_tree *tree, struct t_node *u, 
+						struct t_node *v){
 	if(!u->parent){
 		tree->root = v;
 	}
@@ -221,7 +222,8 @@ static void transplant(struct bs_tree *tree, struct node *u, struct node *v){
 	}
 }
 
-struct node *delete_node(struct bs_tree *tree, struct node *key, comp eq){
+struct t_node *delete_node(struct bs_tree *tree,
+						 struct t_node *key, comp eq){
 	if(!key->left){
 		transplant(tree, key, key->right);
 	}
@@ -229,7 +231,7 @@ struct node *delete_node(struct bs_tree *tree, struct node *key, comp eq){
 		transplant(tree, key, key->left);
 	}
 	else{
-		struct node *y = min(key->right);
+		struct t_node *y = min(key->right);
 		if(eq(y->parent, key)){
 			transplant(tree, y, y->right);
 			y->right = key->right;
@@ -243,11 +245,11 @@ struct node *delete_node(struct bs_tree *tree, struct node *key, comp eq){
 	return key;
 }
 
-struct node *delete_el(struct bs_tree *tree, void *x, comp eq){
+struct t_node *delete_el(struct bs_tree *tree, void *x, comp eq){
 	return delete_node(tree, iter_search(tree, x, eq), eq);
 }
 
-struct node *delete_int(struct bs_tree *tree, int x){
+struct t_node *delete_int(struct bs_tree *tree, int x){
 	comp eq = (comp)int_comp;
 	return delete_el(tree, iter_search(tree, (void *)&x, eq), eq);
 }
@@ -257,9 +259,9 @@ void free_tree(struct bs_tree *tree){
 	free(tree);
 }
 
-void free_tree_node(struct node *root){
+void free_tree_node(struct t_node *root){
 	if(root){
-		struct node *temp = root;
+		struct t_node *temp = root;
 		free_tree_node(temp->left);
 		free_tree_node(temp->right);
 		free(temp);
@@ -274,7 +276,7 @@ void int_print(int *x){
 	printf("%d ", *x);
 }
 
-
+/*
 int main(void){
 	int arr[19] = {50,65,60,55,30,20,40,5,22,25,
 				72,95,35,75,47,78,34,76,32};
@@ -301,7 +303,7 @@ int main(void){
 	insert_int(root, &arr[i++]);
 	inorder(root, (print)int_print);
 	
-	struct node *temp, *t1;
+	struct t_node *temp, *t1;
 	for(temp = tree_min(root); temp; temp = t1){
 		t1 = successor(temp);
 		destroy_node(delete_node(root, temp, (comp)int_comp));
@@ -312,3 +314,4 @@ int main(void){
 	
 	return 0;
 }
+*/
